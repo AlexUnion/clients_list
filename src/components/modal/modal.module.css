@@ -1,0 +1,14 @@
+.container {
+    background-color: rgba(0, 0, 0, .5);
+    z-index: 5;
+}
+
+.btn {
+    @apply py-2;
+    @apply px-4;
+    @apply mx-2;
+    @apply text-white;
+    @apply rounded-2xl;
+
+    transition: background-color .2s linear;
+}

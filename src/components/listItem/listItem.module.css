@@ -1,0 +1,8 @@
+.edit {
+    mask-image: url("../../icons/edit.svg");
+    background-color: #888;
+    transition: background-color .2s linear;
+}
+.edit:hover {
+    background-color: #000;
+}
