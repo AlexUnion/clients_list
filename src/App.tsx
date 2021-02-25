@@ -1,26 +1,45 @@
 import React from 'react';
-import logo from './logo.svg';
+import { request, gql } from 'graphql-request'
+import { useQuery, useMutation } from 'react-query';
+import List from "./components/list/list.component";
+import AddButton from "./components/addButton/AddButton.component";
+import IClient from "./interfaces/Client";
 import './App.css';
 
+const query = gql`
+  query{
+  getClients{
+    id,
+    firstName,
+    lastName,
+    phone,
+    avatarUrl
+  }
+}`;
+
+async function getList() {
+    const { getClients } = await request('https://test-task.expane.pro/api/graphql', query);
+    return getClients;
+}
+
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const { data } = useQuery<Array<IClient>>('todos', getList);
+
+    return (
+        <div className="App">
+            <div className="my-4 text-lg">A list of users</div>
+            {
+                data ?
+                    (
+                        <>
+                            <List data={data}/>
+                            <AddButton/>
+                        </>
+                    ) :
+                    "loading"
+            },
+        </div>
+    );
 }
 
 export default App;
