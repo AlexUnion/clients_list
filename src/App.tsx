@@ -25,25 +25,6 @@ async function getList() {
     return getClients;
 }
 
-async function onSubmitMutation(client: IClient) {
-    const mutationQuery = gql`
-    mutation{
-        updateClient(id: ${client.id},
-            firstName: ${client.firstName}, 
-            lastName: ${client.lastName},
-            phone: ${client.phone || ''},
-            avatarUrl: ${client.avatarUrl || ''}){
-                firstName: firstName,
-                lastName: lastName,
-                phone: phone
-                avatarUrl: avatarUrl
-        }
-    }`;
-    const res = await request(GRAPHQL_URL, mutationQuery);
-    console.log(res);
-}
-
-
 function App() {
     //const [isRegister, setRegister] = useState<boolean>(false);
 

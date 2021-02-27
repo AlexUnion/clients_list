@@ -15,7 +15,8 @@ interface IProps {
 interface IFormInput {
     firstName: string,
     lastName: string,
-    phone?: string
+    phone?: string,
+    avatarUrl?: string,
 }
 
 function Modal(props: IProps) {
