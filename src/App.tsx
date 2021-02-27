@@ -7,6 +7,8 @@ import IClient from "./interfaces/Client";
 import './App.css';
 import Modal from "./components/modal/modal.component";
 
+const GRAPHQL_URL = 'https://test-task.expane.pro/api/graphql';
+
 const query = gql`
   query{
   getClients{
@@ -18,46 +20,32 @@ const query = gql`
   }
 }`;
 
-type Edit = {
-    isEdit: boolean,
-    id: string | null
-}
-
 async function getList() {
-    const { getClients } = await request('https://test-task.expane.pro/api/graphql', query);
+    const { getClients } = await request(GRAPHQL_URL, query);
     return getClients;
 }
 
-const enableScroll = () => {
-    document.body.style.overflow = "scroll";
-};
+async function onSubmitMutation(client: IClient) {
+    const mutationQuery = gql`
+    mutation{
+        updateClient(id: ${client.id},
+            firstName: ${client.firstName}, 
+            lastName: ${client.lastName},
+            phone: ${client.phone || ''},
+            avatarUrl: ${client.avatarUrl || ''}){
+                firstName: firstName,
+                lastName: lastName,
+                phone: phone
+                avatarUrl: avatarUrl
+        }
+    }`;
+    const res = await request(GRAPHQL_URL, mutationQuery);
+    console.log(res);
+}
 
-const disableScroll = () => {
-    document.body.style.overflow = "hidden";
-};
 
 function App() {
-    const [isEdit, setEdit] = useState<Edit>({
-        isEdit: false,
-        id: null,
-    });
-    const [isRegister, setRegister] = useState<boolean>(false);
-
-    if ((isEdit.isEdit && isEdit.id) || isRegister) disableScroll();
-    else enableScroll();
-
-    function handleEdit(id: string) {
-        setEdit({
-            isEdit: true,
-            id,
-        });
-    }
-    function handleCancel() {
-        setEdit({
-            isEdit: false,
-            id: null,
-        })
-    }
+    //const [isRegister, setRegister] = useState<boolean>(false);
 
     const { data } = useQuery<Array<IClient>>('todos', getList);
 
@@ -70,18 +58,11 @@ function App() {
                 data ?
                     (
                         <>
-                            <List data={data} handleEdit={handleEdit}/>
+                            <List data={data}/>
                             <AddButton/>
                         </>
                     ) :
                     "loading"
-            }
-            {
-                isEdit.isEdit && data ?
-                    <Modal title='Редактировать пользователя'
-                           user={data.find((item) => item.id === isEdit.id)}
-                           handleCancel={handleCancel}/> :
-                    null
             }
         </div>
     );

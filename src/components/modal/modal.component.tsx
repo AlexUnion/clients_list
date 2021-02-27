@@ -3,11 +3,13 @@ import { useForm } from "react-hook-form";
 import IClient from "../../interfaces/Client";
 import NamedInput from "../namedInput/namedInput.component";
 import s from './modal.module.css';
+import Warning from "../warning/warning.component";
 
 interface IProps {
     title: string,
     user?: IClient,
     handleCancel: () => void,
+    onSubmit: (data: IFormInput) => void,
 }
 
 interface IFormInput {
@@ -16,11 +18,9 @@ interface IFormInput {
     phone?: string
 }
 
-const onSubmit = (data: IFormInput) => {console.log(data)};
-
 function Modal(props: IProps) {
-    const { title, user, handleCancel } = props;
-    const { register, handleSubmit } = useForm<IFormInput>();
+    const { title, user, handleCancel, onSubmit } = props;
+    const { register, handleSubmit, errors } = useForm<IFormInput>();
 
     return (
         <div className={`overflow-hidden w-screen h-screen fixed top-0 left-0 right-0 bottom-0 ${s.container}`}>
@@ -31,20 +31,50 @@ function Modal(props: IProps) {
                                 name='firstName'
                                 description='Введите имя'
                                 placeHolder='Ваше имя'
-                                register={register}
+                                register={register({
+                                    required: true,
+                                    minLength: 2
+                                })}
                                 value={user?.firstName}/>
+                    {
+                        errors.firstName?.type === 'required'
+                        && <Warning message='Это обезательное поле'/>
+                    }
+                    {
+                        (errors.firstName?.type === 'minLength'
+                            || errors.firstName?.type === 'maxLength')
+                        && <Warning message='Неккоректная длинна имени'/>
+                    }
                     <NamedInput id='lastName'
                                 name='lastName'
                                 description='Введите фамилию'
                                 placeHolder='Ваша фамилия'
-                                register={register}
+                                register={register({
+                                    required: true,
+                                    minLength: 2
+                                })}
                                 value={user?.lastName}/>
+                    {
+                        errors.lastName?.type === 'required'
+                        && <Warning message='Это обезательное поле'/>
+                    }
+                    {
+                        (errors.lastName?.type === 'minLength'
+                            || errors.lastName?.type === 'maxLength')
+                        && <Warning message='Неккоректная длинна фамилии'/>
+                    }
                     <NamedInput id='phone'
                                 name='phone'
                                 description='Введите номер телефона'
                                 placeHolder='Ваш номер телефона'
                                 register={register}
                                 value={user?.phone}/>
+                    <NamedInput id='avatarUrl'
+                                name='avatarUrl'
+                                description='Вставьте URL адресс вашей аватарки'
+                                placeHolder='URL'
+                                register={register}
+                                value={user?.avatarUrl}/>
                     <div className="flex justify-end m-3">
                         <button className={`bg-green-500 ${s.btn} hover:bg-green-600`}
                                 type="submit">Подтвердить</button>
