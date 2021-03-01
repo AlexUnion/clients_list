@@ -4,19 +4,12 @@ import s from './listItem.module.css';
 import Modal from "../modal/modal.component";
 import { gql, request } from "graphql-request";
 import useNotification from "../../hooks/notification.hook";
+import { disableScroll, enableScroll, GRAPHQL_URL } from "../../common/tool/tool";
 
 interface IProps{
     user: IClient,
 }
 
-const GRAPHQL_URL = 'https://test-task.expane.pro/api/graphql';
-
-const enableScroll = () => {
-    document.body.style.overflow = "auto";
-};
-const disableScroll = () => {
-    document.body.style.overflow = "hidden";
-};
 const getMutationQuery = (edited: IClient): string => {
     const { id, firstName, lastName } = edited;
     const phone = edited.phone || '';
@@ -91,7 +84,8 @@ function ListItem(props: IProps) {
                                        addNotification('Пользователь обновлён', 'success');
                                        handleCancel();
                                    }, (err) => {
-                                       console.log(err);
+                                       console.error(err);
+                                       addNotification('Ошибка', 'error');
                                        handleCancel();
                                    })
                            }}/> :
