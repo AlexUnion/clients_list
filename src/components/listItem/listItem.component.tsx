@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import IClient from "../../interfaces/Client";
 import s from './listItem.module.css';
 import Modal from "../modal/modal.component";
-import {gql, request} from "graphql-request";
+import { gql, request } from "graphql-request";
+import useNotification from "../../hooks/notification.hook";
 
 interface IProps{
     user: IClient,
@@ -11,7 +12,7 @@ interface IProps{
 const GRAPHQL_URL = 'https://test-task.expane.pro/api/graphql';
 
 const enableScroll = () => {
-    document.body.style.overflow = "scroll";
+    document.body.style.overflow = "auto";
 };
 const disableScroll = () => {
     document.body.style.overflow = "hidden";
@@ -40,6 +41,7 @@ const defaultUrl = 'https://eitrawmaterials.eu/wp-content/uploads/2016/09/person
 function ListItem(props: IProps) {
     const { user } = props;
     const [isEdit, setEdit] = useState(false);
+    const { addNotification, removeNotification } = useNotification();
     const handleEdit = () => {
         disableScroll();
         setEdit(true);
@@ -79,13 +81,14 @@ function ListItem(props: IProps) {
                            user={user}
                            handleCancel={handleCancel}
                            onSubmit={(data) => {
+                               removeNotification();
                                const query = getMutationQuery({
                                    ...data,
                                    id: user.id
                                });
                                request(GRAPHQL_URL, query)
                                    .then((res) => {
-                                       console.log(res);
+                                       addNotification('Пользователь обновлён', 'success');
                                        handleCancel();
                                    }, (err) => {
                                        console.log(err);

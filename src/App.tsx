@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, {useEffect} from 'react';
 import { request, gql } from 'graphql-request'
-import { useQuery, useMutation } from 'react-query';
+import { useQuery } from 'react-query';
 import List from "./components/list/list.component";
 import AddButton from "./components/addButton/AddButton.component";
 import IClient from "./interfaces/Client";
 import './App.css';
-import Modal from "./components/modal/modal.component";
+import useNotification from "./hooks/notification.hook";
 
 const GRAPHQL_URL = 'https://test-task.expane.pro/api/graphql';
 
@@ -26,9 +26,14 @@ async function getList() {
 }
 
 function App() {
-    //const [isRegister, setRegister] = useState<boolean>(false);
+    const { addNotification } = useNotification();
+    const { data, error } = useQuery<Array<IClient>>('todos', getList);
 
-    const { data } = useQuery<Array<IClient>>('todos', getList);
+    useEffect(() => {
+        if (error) {
+            addNotification('Упс... Что-то пошло не так', 'error');
+        }
+    }, [error]);
 
     return (
         <div className="App" >
