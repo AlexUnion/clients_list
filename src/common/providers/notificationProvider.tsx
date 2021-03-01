@@ -23,7 +23,11 @@ export const APINotificationContext = React.createContext<NotificationContext>({
 export default function APINotificationProvider({ children }: IProps) {
     const [notification, setNotification] = useState<Notification | null>(null);
 
-    const removeNotification = () => setNotification(null);
+    const removeNotification = () => {
+        if (notification) {
+            setNotification(null);
+        }
+    }
 
     const addNotification = (message: string, status: string) => setNotification({message, status});
 
